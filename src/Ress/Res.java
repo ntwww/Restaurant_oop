@@ -1,3 +1,5 @@
+package Ress;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
@@ -10,9 +12,13 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.ActionListener;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Random;
 import java.awt.event.ActionEvent;
 import javax.swing.JMenuBar;
 import java.awt.Choice;
@@ -27,12 +33,17 @@ import javax.swing.border.MatteBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.JTextPane;
@@ -45,10 +56,22 @@ import javax.swing.JComboBox;
 import java.awt.Dialog.ModalExclusionType;
 import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
+import java.awt.Window.Type;
+import java.awt.Toolkit;
 
-public class knot extends JFrame implements ActionListener {
-
+public class Res extends JFrame implements ActionListener {
+	private String data[][]={{"",""},{"Oyster Omelet","85"},{"Sukiyaki","65"},{"Pad See Ew","60"},{"Fried Chicken With Garlic","70"},{"Fried Pock With Garlic","75"},
+			{"Tom Yum Goong","120"},{"Fried Fish With Fish Sauce","180"},{"Fried Pork","60"},{"Fried Noodle With Pork","75"},{"Pad Thai","60"},
+			{"Papaya Salad","55"},{"Stir-fried pock Thigh With Red Curry","50"},{"Green Curry With Chicken","80"},{"Fried Prawn Balls","79"},{"Shrimp Potted With Vermicelli","79"},
+			{"Steak Chicken","89"},{"Fried Seafood With Curry Powder","150"},{"Steak Fish","89"},{"Omelet","40"},{"Pork Fried Rice","59"},
+			{"Fried Chicken With Basil","59"},{"Chicken Fried Rice","59"},{"Stir-fried Pork With Basil","59"},{"Cooked Rice","15"},{"Sticky rice","15"},
+			{"Fried Rice","30"},{"Pepsi 600 ML.","20"},{"Pepsi 1.95 L.","40"},{"Orange Juice","20"},{"Thai Tea","45"},
+			{"Crystal 600 ML.","15"},{"Bubble Milk Tea","50"},{"Green Tea","45"},{"Coca Cola 600 ML.","20"},{"Coca Cola 1.5 L.","40"},
+			{"Tea","20"},{"Thai Iced Dessert","39"},{"Cheesecake","89"},{"Donuts","39"},{"Matcha Daifuku","79"},
+			{"Daifuku","79"},{"Brownie","59"},{"Sweet Waterchestnuts","39"},{"Deletable Imttation Fruits","39"},{"Pancake","69"},
+			{"Moon Cake","69"},{"Icecream","49"},{"Chinese Bun","30"},{"Dumpling","45"},{"Croissant","55"}};
 	private JPanel contentPane;
+	private static int Order = 1;
 	private int winwidth = 1800;
 	private int winheight = 800;
 	private int width = winwidth;
@@ -141,14 +164,12 @@ public class knot extends JFrame implements ActionListener {
 	private JLabel num[];
 	private JTextArea text;
 	private JScrollPane scroll;
-	/**
-	 * Launch the application.
-	 */
+
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					knot frame = new knot();
+					Res frame = new Res();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -156,8 +177,87 @@ public class knot extends JFrame implements ActionListener {
 			}
 		});
 	}
-	
-	private void buildPanel()
+	public Res() {
+		Buy = new int[51];
+		num = new JLabel[51];
+		setallbuy();
+		
+		setBackground(new Color(51, 0, 0));
+		setExtendedState(JFrame.MAXIMIZED_BOTH);
+		getScreenSize();
+		getContentPane().setBackground(Color.BLACK);
+		setTitle("Restaurant OOP");
+		
+		buildPanel1();
+	}
+	private void getScreenSize() {
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        width = gd.getDisplayMode().getWidth();
+        height = gd.getDisplayMode().getHeight();
+    }
+	public void setallbuy() {
+		for(int i = 0;i<=50;i++)
+		{
+			Buy[i] = 0;
+		}
+	}
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(e.getActionCommand() == "Total")
+		{	
+			int chk=0;
+			for(int i=0;i<Buy.length;i++)
+				if(Buy[i]>0)
+					chk=1;
+			if(chk==1) 
+			{
+			dispose();
+			new Total();
+			}
+		}
+		else if(!(e.getActionCommand() == "Add")&&!(e.getActionCommand() == "Delete"))
+		{
+			int i =1;
+			if(put.isSelected())
+			{
+				String no  = e.getActionCommand();
+				for(i = 1;i<51;i++)
+				{
+					if(i == Integer.parseInt(no))
+					{
+						Buy[i] = Buy[i]+1;
+						break;
+					}
+				}
+			}
+			else if(out.isSelected())
+			{
+				String no  = e.getActionCommand();
+				for(i=1;i<51;i++)
+				{
+					if(i == Integer.parseInt(no))
+					{
+						if(Buy[i] >= 1)
+						{
+							Buy[i] = Buy[i]-1;
+						}
+						break;
+					}
+				}
+			}
+			num[i].setText("Number : "+Buy[i]);
+		}
+	}
+	private void returnPage() {
+		setSize(width,height);
+		
+		getContentPane().add(mainPanel, BorderLayout.CENTER);
+		getContentPane().add(panel5, BorderLayout.SOUTH);
+		
+		setVisible(true);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+	private void buildPanel1()
 	{	
 		if(winheight < 700)
 		{
@@ -179,6 +279,9 @@ public class knot extends JFrame implements ActionListener {
 		itemTabPanel3();
 
 		JTabbedPane tabPane = new JTabbedPane();
+		tabPane.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		tabPane.setForeground(new Color(204, 0, 0));
+		tabPane.setBackground(new Color(153, 255, 255));
 		tabPane.setBorder(new TitledBorder(new CompoundBorder(new LineBorder(new Color(160, 160, 160)), new EmptyBorder(2, 2, 2, 2)), "Restaurants ", TitledBorder.TRAILING, TitledBorder.TOP, null, new Color(204, 0, 0)));
 		tabPane.addTab("FOODS",panel1);
 		tabPane.addTab("WATER", panel2);
@@ -213,22 +316,22 @@ public class knot extends JFrame implements ActionListener {
 		//total
 		panel5 = new JPanel();
 		membergroup = new ButtonGroup();
-		panel5.setBackground(Color.black);
+		panel5.setBackground(Color.GRAY);
 		
-		total = new JButton("total");
-		total.setForeground(new Color(204, 0, 0));
-		total.setBackground(new Color(204, 204, 204));
-		put = new JRadioButton("ADD");
+		total = new JButton("Total");
+		total.setForeground(Color.WHITE);
+		total.setBackground(Color.BLACK);
+		put = new JRadioButton("Add");
 		put.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		put.setForeground(new Color(204, 0, 0));
-		put.setBackground(Color.BLACK);
+		put.setForeground(Color.WHITE);
+		put.setBackground(Color.GRAY);
 		out = new JRadioButton("Delete");
 		out.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		out.setForeground(new Color(204, 0, 0));
-		out.setBackground(new Color(0, 0, 0));
+		out.setForeground(Color.WHITE);
+		out.setBackground(Color.GRAY);
 		
-		put.setActionCommand("put");
-		out.setActionCommand("Not put");
+		put.setActionCommand("Add");
+		out.setActionCommand("Delete");
 		
 		total.addActionListener(this);
 		put.addActionListener(this);
@@ -242,16 +345,24 @@ public class knot extends JFrame implements ActionListener {
 		panel5.add(total);
 		
 		put.doClick();
+		
+		getContentPane().add(mainPanel, BorderLayout.CENTER);
+		getContentPane().add(panel5, BorderLayout.SOUTH);
+		
+		setVisible(true);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	private void itemTabPanel3() {
 		panel3 = new JTabbedPane();
+		panel3.setBackground(new Color(255, 204, 102));
 		itemTabPanel3a();
 		itemTabPanel3b();
-		panel3.addTab("page 1",panel3a);
-		panel3.addTab("page 2",panel3b);
+		panel3.addTab("Page 1",panel3a);
+		panel3.addTab("Page 2",panel3b);
 	}
 	private void itemTabPanel3b() {
 		panel3a = new JPanel();
+		panel3a.setBackground(new Color(255, 204, 153));
 		panel3a.setLayout(null);
 		
 		btnNewButton_37 = new JButton("37");
@@ -266,7 +377,7 @@ public class knot extends JFrame implements ActionListener {
 		lblNewLabel_19.setBounds((int) (width*0.36), (int) (height*0.185), (int) (width*0.1), (int) (height*0.1));
 		panel3a.add(lblNewLabel_19);
 		JLabel lblNewLabel_20 = new JLabel("39 Bath");
-		lblNewLabel_20.setBounds((int) (width*0.45), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_20.setBounds((int) (width*0.47), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
 		panel3a.add(lblNewLabel_20);
 		num[37] = new JLabel("Number : "+Buy[37]);
 		num[37].setBounds((int) (width*0.505), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
@@ -285,7 +396,7 @@ public class knot extends JFrame implements ActionListener {
 		lblNewLabel_18.setBounds((int) (width*0.57), (int) (height*0.185), (int) (width*0.1), (int) (height*0.1));
 		panel3a.add(lblNewLabel_18);
 		JLabel lblNewLabel_17 = new JLabel("89 Bath");
-		lblNewLabel_17.setBounds((int) (width*0.66), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_17.setBounds((int) (width*0.68), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
 		panel3a.add(lblNewLabel_17);
 		num[38] = new JLabel("Number : "+Buy[38]);
 		num[38].setBounds((int) (width*0.715), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
@@ -300,11 +411,11 @@ public class knot extends JFrame implements ActionListener {
 		btnNewButton_39.setIcon(av1);
 		btnNewButton_39.setBounds((int) Math.round(width*0.77), (int) Math.round(height*0.025), (int) Math.round(width*0.19), (int) Math.round(height*0.19));
 		btnNewButton_39.addActionListener(this);
-		JLabel lblNewLabel_15 = new JLabel("Donus");
+		JLabel lblNewLabel_15 = new JLabel("Donuts");
 		lblNewLabel_15.setBounds((int) (width*0.78), (int) (height*0.185), (int) (width*0.1), (int) (height*0.1));
 		panel3a.add(lblNewLabel_15);
 		JLabel lblNewLabel_16 = new JLabel("39 Bath");
-		lblNewLabel_16.setBounds((int) (width*0.87), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_16.setBounds((int) (width*0.89), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
 		panel3a.add(lblNewLabel_16);
 		num[39] = new JLabel("Number : "+Buy[39]);
 		num[39].setBounds((int) (width*0.925), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
@@ -323,7 +434,7 @@ public class knot extends JFrame implements ActionListener {
 		lblNewLabel_14.setBounds((int) (width*0.36), (int) (height*0.44), (int) (width*0.1), (int) (height*0.1));
 		panel3a.add(lblNewLabel_14);
 		JLabel lblNewLabel_13 = new JLabel("79 Bath");
-		lblNewLabel_13.setBounds((int) (width*0.45), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_13.setBounds((int) (width*0.47), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
 		panel3a.add(lblNewLabel_13);
 		num[40] = new JLabel("Number : "+Buy[40]);
 		num[40].setBounds((int) (width*0.505), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
@@ -342,7 +453,7 @@ public class knot extends JFrame implements ActionListener {
 		lblNewLabel_12.setBounds((int) (width*0.57), (int) (height*0.44), (int) (width*0.1), (int) (height*0.1));
 		panel3a.add(lblNewLabel_12);
 		JLabel lblNewLabel_11 = new JLabel("79 Bath");
-		lblNewLabel_11.setBounds((int) (width*0.66), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_11.setBounds((int) (width*0.68), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
 		panel3a.add(lblNewLabel_11);
 		num[41] = new JLabel("Number : "+Buy[41]);
 		num[41].setBounds((int) (width*0.715), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
@@ -361,7 +472,7 @@ public class knot extends JFrame implements ActionListener {
 		lblNewLabel_10.setBounds((int) (width*0.78), (int) (height*0.44), (int) (width*0.1), (int) (height*0.1));
 		panel3a.add(lblNewLabel_10);
 		JLabel lblNewLabel_9 = new JLabel("59 Bath");
-		lblNewLabel_9.setBounds((int) (width*0.87), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_9.setBounds((int) (width*0.89), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
 		panel3a.add(lblNewLabel_9);
 		num[42] = new JLabel("Number : "+Buy[42]);
 		num[42].setBounds((int) (width*0.925), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
@@ -376,11 +487,11 @@ public class knot extends JFrame implements ActionListener {
 		btnNewButton_43.setIcon(av1);
 		btnNewButton_43.setBounds((int) Math.round(width*0.35), (int) Math.round(height*0.54), (int) Math.round(width*0.19), (int) Math.round(height*0.19));
 		btnNewButton_43.addActionListener(this);
-		JLabel lblNewLabel_7 = new JLabel("Sweet waterchestnuts");
+		JLabel lblNewLabel_7 = new JLabel("Sweet Waterchestnuts");
 		lblNewLabel_7.setBounds((int) (width*0.36), (int) (height*0.7), (int) (width*0.1), (int) (height*0.1));
 		panel3a.add(lblNewLabel_7);
 		JLabel lblNewLabel_8 = new JLabel("39 Bath");
-		lblNewLabel_8.setBounds((int) (width*0.45), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_8.setBounds((int) (width*0.47), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
 		panel3a.add(lblNewLabel_8);
 		num[43] = new JLabel("Number : "+Buy[43]);
 		num[43].setBounds((int) (width*0.505), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
@@ -395,11 +506,11 @@ public class knot extends JFrame implements ActionListener {
 		btnNewButton_44.setIcon(av1);
 		btnNewButton_44.setBounds((int) Math.round(width*0.56), (int) Math.round(height*0.54), (int) Math.round(width*0.19), (int) Math.round(height*0.19));
 		btnNewButton_44.addActionListener(this);
-		JLabel lblNewLabel_5 = new JLabel("Deletable imttation fruits");
+		JLabel lblNewLabel_5 = new JLabel("Deletable Imttation Fruits");
 		lblNewLabel_5.setBounds((int) (width*0.57), (int) (height*0.7), (int) (width*0.1), (int) (height*0.1));
 		panel3a.add(lblNewLabel_5);
 		JLabel lblNewLabel_6 = new JLabel("39 Bath");
-		lblNewLabel_6.setBounds((int) (width*0.66), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_6.setBounds((int) (width*0.68), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
 		panel3a.add(lblNewLabel_6);
 		num[44] = new JLabel("Number : "+Buy[44]);
 		num[44].setBounds((int) (width*0.715), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
@@ -418,7 +529,7 @@ public class knot extends JFrame implements ActionListener {
 		lblNewLabel_3.setBounds((int) (width*0.78), (int) (height*0.7), (int) (width*0.1), (int) (height*0.1));
 		panel3a.add(lblNewLabel_3);
 		JLabel lblNewLabel_4 = new JLabel("69 Bath");
-		lblNewLabel_4.setBounds((int) (width*0.87), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_4.setBounds((int) (width*0.89), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
 		panel3a.add(lblNewLabel_4);
 		num[45] = new JLabel("Number : "+Buy[45]);
 		num[45].setBounds((int) (width*0.925), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
@@ -433,7 +544,7 @@ public class knot extends JFrame implements ActionListener {
 		btnNewButton_46.setIcon(av1);
 		btnNewButton_46.setBounds((int) (width*0.03), (int) (height*0.05), (int) (width*0.2875), (int) (height*0.6));
 		btnNewButton_46.addActionListener(this);
-		JLabel lblNewLabel_1 = new JLabel("Moon cake");
+		JLabel lblNewLabel_1 = new JLabel("Moon Cake");
 		lblNewLabel_1.setBounds((int) (width*0.04), (int) (height*0.63), (int) (width*0.1), (int) (height*0.1));
 		panel3a.add(lblNewLabel_1);
 		JLabel lblNewLabel_2 = new JLabel("69 Bath");
@@ -446,6 +557,7 @@ public class knot extends JFrame implements ActionListener {
 	}
 	private void itemTabPanel3a() {
 		panel3b = new JPanel();
+		panel3b.setBackground(new Color(255, 204, 153));
 		panel3b.setLayout(null);
 		
 		btnNewButton_47 = new JButton("47");
@@ -456,11 +568,11 @@ public class knot extends JFrame implements ActionListener {
 		btnNewButton_47.setIcon(av1);
 		btnNewButton_47.setBounds((int) Math.round(width*0.35), (int) Math.round(height*0.025), (int) Math.round(width*0.19), (int) Math.round(height*0.19));
 		btnNewButton_47.addActionListener(this);
-		JLabel lblNewLabel_7 = new JLabel("Ice cream");
+		JLabel lblNewLabel_7 = new JLabel("Icecream");
 		lblNewLabel_7.setBounds((int) (width*0.36), (int) (height*0.185), (int) (width*0.1), (int) (height*0.1));
 		panel3b.add(lblNewLabel_7);
 		JLabel lblNewLabel_8 = new JLabel("49 Bath");
-		lblNewLabel_8.setBounds((int) (width*0.45), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_8.setBounds((int) (width*0.47), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
 		panel3b.add(lblNewLabel_8);
 		num[47] = new JLabel("Number : "+Buy[47]);
 		num[47].setBounds((int) (width*0.505), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
@@ -475,11 +587,11 @@ public class knot extends JFrame implements ActionListener {
 		btnNewButton_48.setIcon(av1);
 		btnNewButton_48.setBounds((int) Math.round(width*0.56), (int) Math.round(height*0.025), (int) Math.round(width*0.19), (int) Math.round(height*0.19));
 		btnNewButton_48.addActionListener(this);
-		JLabel lblNewLabel_5 = new JLabel("Chinese bun");
+		JLabel lblNewLabel_5 = new JLabel("Chinese Bun");
 		lblNewLabel_5.setBounds((int) (width*0.57), (int) (height*0.185), (int) (width*0.1), (int) (height*0.1));
 		panel3b.add(lblNewLabel_5);
 		JLabel lblNewLabel_6 = new JLabel("30 Bath");
-		lblNewLabel_6.setBounds((int) (width*0.66), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_6.setBounds((int) (width*0.68), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
 		panel3b.add(lblNewLabel_6);
 		num[48] = new JLabel("Number : "+Buy[48]);
 		num[48].setBounds((int) (width*0.715), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
@@ -498,7 +610,7 @@ public class knot extends JFrame implements ActionListener {
 		lblNewLabel_3.setBounds((int) (width*0.78), (int) (height*0.185), (int) (width*0.1), (int) (height*0.1));
 		panel3b.add(lblNewLabel_3);
 		JLabel lblNewLabel_4 = new JLabel("45 Bath");
-		lblNewLabel_4.setBounds((int) (width*0.87), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_4.setBounds((int) (width*0.89), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
 		panel3b.add(lblNewLabel_4);
 		num[49] = new JLabel("Number : "+Buy[49]);
 		num[49].setBounds((int) (width*0.925), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
@@ -526,11 +638,13 @@ public class knot extends JFrame implements ActionListener {
 	}
 	private void itemTabPanel2() {
 		panel2 = new JTabbedPane();
+		panel2.setBackground(new Color(255, 204, 102));
 		itemTabPanel2a();
-		panel2.addTab("page 1",panel2a);
+		panel2.addTab("Page 1",panel2a);
 	}
 	private void itemTabPanel2a() {
 		panel2a = new JPanel();
+		panel2a.setBackground(new Color(255, 204, 153));
 		panel2a.setLayout(null);
 		
 		btnNewButton_27 = new JButton("27");
@@ -545,7 +659,7 @@ public class knot extends JFrame implements ActionListener {
 		lblNewLabel_19.setBounds((int) (width*0.36), (int) (height*0.185), (int) (width*0.1), (int) (height*0.1));
 		panel2a.add(lblNewLabel_19);
 		JLabel lblNewLabel_20 = new JLabel("20 Bath");
-		lblNewLabel_20.setBounds((int) (width*0.45), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_20.setBounds((int) (width*0.47), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
 		panel2a.add(lblNewLabel_20);
 		num[27] = new JLabel("Number : "+Buy[27]);
 		num[27].setBounds((int) (width*0.505), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
@@ -564,7 +678,7 @@ public class knot extends JFrame implements ActionListener {
 		lblNewLabel_18.setBounds((int) (width*0.57), (int) (height*0.185), (int) (width*0.1), (int) (height*0.1));
 		panel2a.add(lblNewLabel_18);
 		JLabel lblNewLabel_17 = new JLabel("40 Bath");
-		lblNewLabel_17.setBounds((int) (width*0.66), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_17.setBounds((int) (width*0.68), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
 		panel2a.add(lblNewLabel_17);
 		num[28] = new JLabel("Number : "+Buy[28]);
 		num[28].setBounds((int) (width*0.715), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
@@ -582,8 +696,8 @@ public class knot extends JFrame implements ActionListener {
 		JLabel lblNewLabel_16 = new JLabel("Orange Juice");
 		lblNewLabel_16.setBounds((int) (width*0.78), (int) (height*0.185), (int) (width*0.1), (int) (height*0.1));
 		panel2a.add(lblNewLabel_16);
-		JLabel lblNewLabel_15 = new JLabel("20");
-		lblNewLabel_15.setBounds((int) (width*0.87), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
+		JLabel lblNewLabel_15 = new JLabel("20 Bath");
+		lblNewLabel_15.setBounds((int) (width*0.89), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
 		panel2a.add(lblNewLabel_15);
 		num[29] = new JLabel("Number : "+Buy[29]);
 		num[29].setBounds((int) (width*0.925), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
@@ -602,7 +716,7 @@ public class knot extends JFrame implements ActionListener {
 		lblNewLabel_14.setBounds((int) (width*0.36), (int) (height*0.44), (int) (width*0.1), (int) (height*0.1));
 		panel2a.add(lblNewLabel_14);
 		JLabel lblNewLabel_13 = new JLabel("45 Bath");
-		lblNewLabel_13.setBounds((int) (width*0.45), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_13.setBounds((int) (width*0.47), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
 		panel2a.add(lblNewLabel_13);
 		num[30] = new JLabel("Number : "+Buy[30]);
 		num[30].setBounds((int) (width*0.505), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
@@ -621,7 +735,7 @@ public class knot extends JFrame implements ActionListener {
 		lblNewLabel_12.setBounds((int) (width*0.57), (int) (height*0.44), (int) (width*0.1), (int) (height*0.1));
 		panel2a.add(lblNewLabel_12);
 		JLabel lblNewLabel_11 = new JLabel("15 Bath");
-		lblNewLabel_11.setBounds((int) (width*0.66), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_11.setBounds((int) (width*0.68), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
 		panel2a.add(lblNewLabel_11);
 		num[31] = new JLabel("Number : "+Buy[31]);
 		num[31].setBounds((int) (width*0.715), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
@@ -640,7 +754,7 @@ public class knot extends JFrame implements ActionListener {
 		lblNewLabel_10.setBounds((int) (width*0.78), (int) (height*0.44), (int) (width*0.1), (int) (height*0.1));
 		panel2a.add(lblNewLabel_10);
 		JLabel lblNewLabel_9 = new JLabel("50 Bath");
-		lblNewLabel_9.setBounds((int) (width*0.87), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_9.setBounds((int) (width*0.89), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
 		panel2a.add(lblNewLabel_9);
 		num[32] = new JLabel("Number : "+Buy[32]);
 		num[32].setBounds((int) (width*0.925), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
@@ -659,7 +773,7 @@ public class knot extends JFrame implements ActionListener {
 		lblNewLabel_7.setBounds((int) (width*0.36), (int) (height*0.7), (int) (width*0.1), (int) (height*0.1));
 		panel2a.add(lblNewLabel_7);
 		JLabel lblNewLabel_8 = new JLabel("45 Bath");
-		lblNewLabel_8.setBounds((int) (width*0.45), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_8.setBounds((int) (width*0.47), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
 		panel2a.add(lblNewLabel_8);
 		num[33] = new JLabel("Number : "+Buy[33]);
 		num[33].setBounds((int) (width*0.505), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
@@ -678,7 +792,7 @@ public class knot extends JFrame implements ActionListener {
 		lblNewLabel_5.setBounds((int) (width*0.57), (int) (height*0.7), (int) (width*0.1), (int) (height*0.1));
 		panel2a.add(lblNewLabel_5);
 		JLabel lblNewLabel_6 = new JLabel("20 Bath");
-		lblNewLabel_6.setBounds((int) (width*0.66), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_6.setBounds((int) (width*0.68), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
 		panel2a.add(lblNewLabel_6);
 		num[34] = new JLabel("Number : "+Buy[34]);
 		num[34].setBounds((int) (width*0.715), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
@@ -697,7 +811,7 @@ public class knot extends JFrame implements ActionListener {
 		lblNewLabel_3.setBounds((int) (width*0.78), (int) (height*0.7), (int) (width*0.1), (int) (height*0.1));
 		panel2a.add(lblNewLabel_3);
 		JLabel lblNewLabel_4 = new JLabel("40 bath");
-		lblNewLabel_4.setBounds((int) (width*0.87), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_4.setBounds((int) (width*0.89), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
 		panel2a.add(lblNewLabel_4);
 		num[35] = new JLabel("Number : "+Buy[35]);
 		num[35].setBounds((int) (width*0.925), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
@@ -726,20 +840,20 @@ public class knot extends JFrame implements ActionListener {
 	}
 	private void itemTabPanel1() {
 		panel1 = new JTabbedPane();
-		panel1.setBackground(new Color(255, 255, 255));
+		panel1.setBackground(new Color(255, 204, 102));
 		itemTabPanel1a();
 		itemTabPanel1b();
 		itemTabPanel1c();
 		itemTabPanel1d();
-		panel1.addTab("page 1",panel1a);
-		
-		panel1.addTab("page 2",panel1b);
-		panel1.addTab("one Dish",panel1c);
+		panel1.addTab("Page 1",panel1a);
+		panel1.addTab("Page 2",panel1b);
+		panel1.addTab("One Dish",panel1c);
 		panel1.addTab("Rice",panel1d);
 	}
 
 	private void itemTabPanel1d() {
 		panel1d = new JPanel();
+		panel1d.setBackground(new Color(255, 204, 153));
 		panel1d.setLayout(null);
 		
 		btnNewButton_24 = new JButton("24");
@@ -750,11 +864,11 @@ public class knot extends JFrame implements ActionListener {
 		btnNewButton_24.setIcon(av1);
 		btnNewButton_24.setBounds((int) Math.round(width*0.35), (int) Math.round(height*0.025), (int) Math.round(width*0.19), (int) Math.round(height*0.19));
 		btnNewButton_24.addActionListener(this);
-		JLabel lblNewLabel_18 = new JLabel("cooked rice");
+		JLabel lblNewLabel_18 = new JLabel("Cooked Rice");
 		lblNewLabel_18.setBounds((int) (width*0.36), (int) (height*0.185), (int) (width*0.1), (int) (height*0.1));
 		panel1d.add(lblNewLabel_18);
 		JLabel lblNewLabel_19 = new JLabel("15 Bath");
-		lblNewLabel_19.setBounds((int) (width*0.45), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_19.setBounds((int) (width*0.47), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
 		panel1d.add(lblNewLabel_19);
 		num[24] = new JLabel("Number : "+Buy[24]);
 		num[24].setBounds((int) (width*0.505), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
@@ -769,11 +883,11 @@ public class knot extends JFrame implements ActionListener {
 		btnNewButton_25.setIcon(av1);
 		btnNewButton_25.setBounds((int) Math.round(width*0.56), (int) Math.round(height*0.025), (int) Math.round(width*0.19), (int) Math.round(height*0.19));
 		btnNewButton_25.addActionListener(this);
-		JLabel lblNewLabel_16 = new JLabel("Sticky rice");
+		JLabel lblNewLabel_16 = new JLabel("Sticky Rice");
 		lblNewLabel_16.setBounds((int) (width*0.57), (int) (height*0.185), (int) (width*0.1), (int) (height*0.1));
 		panel1d.add(lblNewLabel_16);
 		JLabel lblNewLabel_17 = new JLabel("15 Bath");
-		lblNewLabel_17.setBounds((int) (width*0.66), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_17.setBounds((int) (width*0.68), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
 		panel1d.add(lblNewLabel_17);
 		num[25] = new JLabel("Number : "+Buy[25]);
 		num[25].setBounds((int) (width*0.715), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
@@ -788,7 +902,7 @@ public class knot extends JFrame implements ActionListener {
 		btnNewButton_26.setIcon(av1);
 		btnNewButton_26.setBounds((int) (width*0.03), (int) (height*0.05), (int) (width*0.2875), (int) (height*0.6));
 		btnNewButton_26.addActionListener(this);
-		JLabel lblNewLabel = new JLabel("Fried rice");
+		JLabel lblNewLabel = new JLabel("Fried Rice");
 		lblNewLabel.setBounds((int) (width*0.04), (int) (height*0.63), (int) (width*0.1), (int) (height*0.1));
 		panel1d.add(lblNewLabel);
 		JLabel lblNewLabel_1 = new JLabel("30 Bath");
@@ -802,6 +916,7 @@ public class knot extends JFrame implements ActionListener {
 
 	private void itemTabPanel1b() {
 		panel1b = new JPanel();
+		panel1b.setBackground(new Color(255, 204, 153));
 		panel1b.setLayout(null);
 		
 		btnNewButton_11 = new JButton("11");
@@ -816,7 +931,7 @@ public class knot extends JFrame implements ActionListener {
 		lblNewLabel_18.setBounds((int) (width*0.36), (int) (height*0.185), (int) (width*0.1), (int) (height*0.1));
 		panel1b.add(lblNewLabel_18);
 		JLabel lblNewLabel_19 = new JLabel("55 Bath");
-		lblNewLabel_19.setBounds((int) (width*0.45), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_19.setBounds((int) (width*0.47), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
 		panel1b.add(lblNewLabel_19);
 		num[11] = new JLabel("Number : "+Buy[11]);
 		num[11].setBounds((int) (width*0.505), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
@@ -831,11 +946,11 @@ public class knot extends JFrame implements ActionListener {
 		btnNewButton_12.setIcon(av1);
 		btnNewButton_12.setBounds((int) Math.round(width*0.56), (int) Math.round(height*0.025), (int) Math.round(width*0.19), (int) Math.round(height*0.19));
 		btnNewButton_12.addActionListener(this);
-		JLabel lblNewLabel_16 = new JLabel("Stir-fried pock Thigh with Red Curry");
-		lblNewLabel_16.setBounds((int) (width*0.57), (int) (height*0.185), (int) (width*0.1), (int) (height*0.1));
+		JLabel lblNewLabel_16 = new JLabel("Stir-Fried Pock Thigh With Red Curry");
+		lblNewLabel_16.setBounds((int) (width*0.57), (int) (height*0.185), (int) (width*0.12), (int) (height*0.1));
 		panel1b.add(lblNewLabel_16);
 		JLabel lblNewLabel_17 = new JLabel("50 Bath");
-		lblNewLabel_17.setBounds((int) (width*0.66), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_17.setBounds((int) (width*0.68), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
 		panel1b.add(lblNewLabel_17);
 		num[12] = new JLabel("Number : "+Buy[12]);
 		num[12].setBounds((int) (width*0.715), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
@@ -854,7 +969,7 @@ public class knot extends JFrame implements ActionListener {
 		lblNewLabel_14.setBounds((int) (width*0.78), (int) (height*0.185), (int) (width*0.1), (int) (height*0.1));
 		panel1b.add(lblNewLabel_14);
 		JLabel lblNewLabel_15 = new JLabel("80 Bath");
-		lblNewLabel_15.setBounds((int) (width*0.87), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_15.setBounds((int) (width*0.89), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
 		panel1b.add(lblNewLabel_15);
 		num[13] = new JLabel("Number : "+Buy[13]);
 		num[13].setBounds((int) (width*0.925), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
@@ -869,11 +984,11 @@ public class knot extends JFrame implements ActionListener {
 		btnNewButton_14.setIcon(av1);
 		btnNewButton_14.setBounds((int) Math.round(width*0.35), (int) Math.round(height*0.28), (int) Math.round(width*0.19), (int) Math.round(height*0.19));
 		btnNewButton_14.addActionListener(this);
-		JLabel lblNewLabel_12 = new JLabel("fried prawn balls");
+		JLabel lblNewLabel_12 = new JLabel("Fried Prawn Balls ");
 		lblNewLabel_12.setBounds((int) (width*0.36), (int) (height*0.44), (int) (width*0.1), (int) (height*0.1));
 		panel1b.add(lblNewLabel_12);
 		JLabel lblNewLabel_13 = new JLabel("79 Bath");
-		lblNewLabel_13.setBounds((int) (width*0.45), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_13.setBounds((int) (width*0.47), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
 		panel1b.add(lblNewLabel_13);
 		num[14] = new JLabel("Number : "+Buy[14]);
 		num[14].setBounds((int) (width*0.505), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
@@ -888,11 +1003,11 @@ public class knot extends JFrame implements ActionListener {
 		btnNewButton_15.setIcon(av1);
 		btnNewButton_15.setBounds((int) Math.round(width*0.56), (int) Math.round(height*0.28), (int) Math.round(width*0.19), (int) Math.round(height*0.19));
 		btnNewButton_15.addActionListener(this);
-		JLabel lblNewLabel_10 = new JLabel("Shrimp potted with vermicelli");
+		JLabel lblNewLabel_10 = new JLabel("Shrimp Potted With Vermicelli");
 		lblNewLabel_10.setBounds((int) (width*0.57), (int) (height*0.44), (int) (width*0.1), (int) (height*0.1));
 		panel1b.add(lblNewLabel_10);
 		JLabel lblNewLabel_11 = new JLabel("79 Bath");
-		lblNewLabel_11.setBounds((int) (width*0.66), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_11.setBounds((int) (width*0.68), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
 		panel1b.add(lblNewLabel_11);
 		num[15] = new JLabel("Number : "+Buy[15]);
 		num[15].setBounds((int) (width*0.715), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
@@ -907,11 +1022,11 @@ public class knot extends JFrame implements ActionListener {
 		btnNewButton_16.setIcon(av1);
 		btnNewButton_16.setBounds((int) Math.round(width*0.77), (int) Math.round(height*0.28), (int) Math.round(width*0.19), (int) Math.round(height*0.19));
 		btnNewButton_16.addActionListener(this);
-		JLabel lblNewLabel_8 = new JLabel("Steak chicken");
+		JLabel lblNewLabel_8 = new JLabel("Steak Chicken");
 		lblNewLabel_8.setBounds((int) (width*0.78), (int) (height*0.44), (int) (width*0.1), (int) (height*0.1));
 		panel1b.add(lblNewLabel_8);
 		JLabel lblNewLabel_9 = new JLabel("89 Bath");
-		lblNewLabel_9.setBounds((int) (width*0.87), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_9.setBounds((int) (width*0.89), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
 		panel1b.add(lblNewLabel_9);
 		num[16] = new JLabel("Number : "+Buy[16]);
 		num[16].setBounds((int) (width*0.925), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
@@ -926,11 +1041,11 @@ public class knot extends JFrame implements ActionListener {
 		btnNewButton_17.setIcon(av1);
 		btnNewButton_17.setBounds((int) Math.round(width*0.35), (int) Math.round(height*0.54), (int) Math.round(width*0.19), (int) Math.round(height*0.19));
 		btnNewButton_17.addActionListener(this);
-		JLabel lblNewLabel_6 = new JLabel("Fried Seafood with Curry Powder");
+		JLabel lblNewLabel_6 = new JLabel("Fried Seafood With Curry Powder");
 		lblNewLabel_6.setBounds((int) (width*0.36), (int) (height*0.7), (int) (width*0.1), (int) (height*0.1));
 		panel1b.add(lblNewLabel_6);
 		JLabel lblNewLabel_7 = new JLabel("      150 Bath");
-		lblNewLabel_7.setBounds((int) (width*0.45), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_7.setBounds((int) (width*0.46), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
 		panel1b.add(lblNewLabel_7);
 		num[17] = new JLabel("Number : "+Buy[17]);
 		num[17].setBounds((int) (width*0.505), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
@@ -945,11 +1060,11 @@ public class knot extends JFrame implements ActionListener {
 		btnNewButton_18.setIcon(av1);
 		btnNewButton_18.setBounds((int) Math.round(width*0.56), (int) Math.round(height*0.54), (int) Math.round(width*0.19), (int) Math.round(height*0.19));
 		btnNewButton_18.addActionListener(this);
-		JLabel lblNewLabel_4 = new JLabel("steak fish");
+		JLabel lblNewLabel_4 = new JLabel("Steak Fish");
 		lblNewLabel_4.setBounds((int) (width*0.57), (int) (height*0.7), (int) (width*0.1), (int) (height*0.1));
 		panel1b.add(lblNewLabel_4);
 		JLabel lblNewLabel_5 = new JLabel("89 Bath");
-		lblNewLabel_5.setBounds((int) (width*0.66), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_5.setBounds((int) (width*0.68), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
 		panel1b.add(lblNewLabel_5);
 		num[18] = new JLabel("Number : "+Buy[18]);
 		num[18].setBounds((int) (width*0.715), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
@@ -967,7 +1082,7 @@ public class knot extends JFrame implements ActionListener {
 		JLabel lblNewLabel = new JLabel("Omelet");
 		lblNewLabel.setBounds((int) (width*0.04), (int) (height*0.63), (int) (width*0.1), (int) (height*0.1));
 		panel1b.add(lblNewLabel);
-		JLabel lblNewLabel_1 = new JLabel("65 Bath");
+		JLabel lblNewLabel_1 = new JLabel("40 Bath");
 		lblNewLabel_1.setBounds((int) (width*0.2), (int) (height*0.63), (int) (width*0.05), (int) (height*0.1));
 		panel1b.add(lblNewLabel_1);
 		num[19] = new JLabel("Number : "+Buy[19]);
@@ -977,6 +1092,7 @@ public class knot extends JFrame implements ActionListener {
 	}
 	private void itemTabPanel1c() {
 		panel1c = new JPanel();
+		panel1c.setBackground(new Color(255, 204, 153));
 		panel1c.setLayout(null);
 		
 		btnNewButton_20 = new JButton("20");
@@ -987,11 +1103,11 @@ public class knot extends JFrame implements ActionListener {
 		btnNewButton_20.setIcon(av1);
 		btnNewButton_20.setBounds((int) Math.round(width*0.35), (int) Math.round(height*0.025), (int) Math.round(width*0.19), (int) Math.round(height*0.19));
 		btnNewButton_20.addActionListener(this);
-		JLabel lblNewLabel_18 = new JLabel("Pork fried rice");
+		JLabel lblNewLabel_18 = new JLabel("Pork Fried Rice");
 		lblNewLabel_18.setBounds((int) (width*0.36), (int) (height*0.185), (int) (width*0.1), (int) (height*0.1));
 		panel1c.add(lblNewLabel_18);
 		JLabel lblNewLabel_19 = new JLabel("59 Bath");
-		lblNewLabel_19.setBounds((int) (width*0.45), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_19.setBounds((int) (width*0.47), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
 		panel1c.add(lblNewLabel_19);
 		num[20] = new JLabel("Number : "+Buy[20]);
 		num[20].setBounds((int) (width*0.505), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
@@ -1006,11 +1122,11 @@ public class knot extends JFrame implements ActionListener {
 		btnNewButton_21.setIcon(av1);
 		btnNewButton_21.setBounds((int) Math.round(width*0.56), (int) Math.round(height*0.025), (int) Math.round(width*0.19), (int) Math.round(height*0.19));
 		btnNewButton_21.addActionListener(this);
-		JLabel lblNewLabel_16 = new JLabel(" fried Chicken with Basil");
+		JLabel lblNewLabel_16 = new JLabel(" Fried Chicken With Basil");
 		lblNewLabel_16.setBounds((int) (width*0.57), (int) (height*0.185), (int) (width*0.1), (int) (height*0.1));
 		panel1c.add(lblNewLabel_16);
 		JLabel lblNewLabel_17 = new JLabel("59 Bath");
-		lblNewLabel_17.setBounds((int) (width*0.66), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_17.setBounds((int) (width*0.68), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
 		panel1c.add(lblNewLabel_17);
 		num[21] = new JLabel("Number : "+Buy[21]);
 		num[21].setBounds((int) (width*0.715), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
@@ -1025,11 +1141,11 @@ public class knot extends JFrame implements ActionListener {
 		btnNewButton_22.setIcon(av1);
 		btnNewButton_22.setBounds((int) Math.round(width*0.77), (int) Math.round(height*0.025), (int) Math.round(width*0.19), (int) Math.round(height*0.19));
 		btnNewButton_22.addActionListener(this);
-		JLabel lblNewLabel_14 = new JLabel("Chicken fried rice");
+		JLabel lblNewLabel_14 = new JLabel("Chicken Fried Rice");
 		lblNewLabel_14.setBounds((int) (width*0.78), (int) (height*0.185), (int) (width*0.1), (int) (height*0.1));
 		panel1c.add(lblNewLabel_14);
 		JLabel lblNewLabel_15 = new JLabel("59 Bath");
-		lblNewLabel_15.setBounds((int) (width*0.87), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_15.setBounds((int) (width*0.89), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
 		panel1c.add(lblNewLabel_15);
 		num[22] = new JLabel("Number : "+Buy[22]);
 		num[22].setBounds((int) (width*0.925), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
@@ -1044,7 +1160,7 @@ public class knot extends JFrame implements ActionListener {
 		btnNewButton_23.setIcon(av1);
 		btnNewButton_23.setBounds((int) (width*0.03), (int) (height*0.05), (int) (width*0.2875), (int) (height*0.6));
 		btnNewButton_23.addActionListener(this);
-		JLabel lblNewLabel = new JLabel("Stir- fried Pork with Basil");
+		JLabel lblNewLabel = new JLabel("Stir- Fried Pork With Basil");
 		lblNewLabel.setBounds((int) (width*0.04), (int) (height*0.63), (int) (width*0.1), (int) (height*0.1));
 		panel1c.add(lblNewLabel);
 		JLabel lblNewLabel_1 = new JLabel("59 Bath");
@@ -1057,6 +1173,7 @@ public class knot extends JFrame implements ActionListener {
 	}
 	private void itemTabPanel1a() {
 		panel1a = new JPanel();
+		panel1a.setBackground(new Color(255, 204, 153));
 		panel1a.setLayout(null);
 		
 		btnNewButton_1 = new JButton("1");
@@ -1067,11 +1184,11 @@ public class knot extends JFrame implements ActionListener {
 		btnNewButton_1.setIcon(av1);
 		btnNewButton_1.setBounds((int) Math.round(width*0.35), (int) Math.round(height*0.025), (int) Math.round(width*0.19), (int) Math.round(height*0.19));
 		btnNewButton_1.addActionListener(this);
-		JLabel lblNewLabel_18 = new JLabel("Oyster Omelet");
+		JLabel lblNewLabel_18 = new JLabel("Oyster Omelet ");
 		lblNewLabel_18.setBounds((int) (width*0.36), (int) (height*0.185), (int) (width*0.1), (int) (height*0.1));
 		panel1a.add(lblNewLabel_18);
 		JLabel lblNewLabel_19 = new JLabel("85 Bath");
-		lblNewLabel_19.setBounds((int) (width*0.45), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_19.setBounds((int) (width*0.47), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
 		panel1a.add(lblNewLabel_19);
 		num[1] = new JLabel("Number : "+Buy[1]);
 		num[1].setBounds((int) (width*0.505), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
@@ -1086,11 +1203,11 @@ public class knot extends JFrame implements ActionListener {
 		btnNewButton_2.setIcon(av1);
 		btnNewButton_2.setBounds((int) Math.round(width*0.56), (int) Math.round(height*0.025), (int) Math.round(width*0.19), (int) Math.round(height*0.19));
 		btnNewButton_2.addActionListener(this);
-		JLabel lblNewLabel_16 = new JLabel("Sukiyaki");
+		JLabel lblNewLabel_16 = new JLabel("Sukiyaki ");
 		lblNewLabel_16.setBounds((int) (width*0.57), (int) (height*0.185), (int) (width*0.1), (int) (height*0.1));
 		panel1a.add(lblNewLabel_16);
 		JLabel lblNewLabel_17 = new JLabel("65 Bath");
-		lblNewLabel_17.setBounds((int) (width*0.66), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_17.setBounds((int) (width*0.67), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
 		panel1a.add(lblNewLabel_17);
 		num[2] = new JLabel("Number : "+Buy[2]);
 		num[2].setBounds((int) (width*0.715), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
@@ -1109,7 +1226,7 @@ public class knot extends JFrame implements ActionListener {
 		lblNewLabel_14.setBounds((int) (width*0.78), (int) (height*0.185), (int) (width*0.1), (int) (height*0.1));
 		panel1a.add(lblNewLabel_14);
 		JLabel lblNewLabel_15 = new JLabel("60 Bath");
-		lblNewLabel_15.setBounds((int) (width*0.87), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_15.setBounds((int) (width*0.89), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
 		panel1a.add(lblNewLabel_15);
 		num[3] = new JLabel("Number : "+Buy[3]);
 		num[3].setBounds((int) (width*0.925), (int) (height*0.185), (int) (width*0.05), (int) (height*0.1));
@@ -1124,11 +1241,11 @@ public class knot extends JFrame implements ActionListener {
 		btnNewButton_4.setIcon(av1);
 		btnNewButton_4.setBounds((int) Math.round(width*0.35), (int) Math.round(height*0.28), (int) Math.round(width*0.19), (int) Math.round(height*0.19));
 		btnNewButton_4.addActionListener(this);
-		JLabel lblNewLabel_12 = new JLabel("Fried chicken with garlic");
+		JLabel lblNewLabel_12 = new JLabel("Fried Chicken With Garlic");
 		lblNewLabel_12.setBounds((int) (width*0.36), (int) (height*0.44), (int) (width*0.1), (int) (height*0.1));
 		panel1a.add(lblNewLabel_12);
 		JLabel lblNewLabel_13 = new JLabel("70 Bath");
-		lblNewLabel_13.setBounds((int) (width*0.45), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_13.setBounds((int) (width*0.47), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
 		panel1a.add(lblNewLabel_13);
 		num[4] = new JLabel("Number : "+Buy[4]);
 		num[4].setBounds((int) (width*0.505), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
@@ -1143,11 +1260,11 @@ public class knot extends JFrame implements ActionListener {
 		btnNewButton_5.setIcon(av1);
 		btnNewButton_5.setBounds((int) Math.round(width*0.56), (int) Math.round(height*0.28), (int) Math.round(width*0.19), (int) Math.round(height*0.19));
 		btnNewButton_5.addActionListener(this);
-		JLabel lblNewLabel_10 = new JLabel("Fried pock with garlic");
+		JLabel lblNewLabel_10 = new JLabel("Fried Pock With Garlic ");
 		lblNewLabel_10.setBounds((int) (width*0.57), (int) (height*0.44), (int) (width*0.1), (int) (height*0.1));
 		panel1a.add(lblNewLabel_10);
 		JLabel lblNewLabel_11 = new JLabel("75 Bath");
-		lblNewLabel_11.setBounds((int) (width*0.66), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_11.setBounds((int) (width*0.68), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
 		panel1a.add(lblNewLabel_11);
 		num[5] = new JLabel("Number : "+Buy[5]);
 		num[5].setBounds((int) (width*0.715), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
@@ -1166,7 +1283,7 @@ public class knot extends JFrame implements ActionListener {
 		lblNewLabel_8.setBounds((int) (width*0.78), (int) (height*0.44), (int) (width*0.1), (int) (height*0.1));
 		panel1a.add(lblNewLabel_8);
 		JLabel lblNewLabel_9 = new JLabel("120 Bath");
-		lblNewLabel_9.setBounds((int) (width*0.87), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_9.setBounds((int) (width*0.89), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
 		panel1a.add(lblNewLabel_9);
 		num[6] = new JLabel("Number : "+Buy[6]);
 		num[6].setBounds((int) (width*0.925), (int) (height*0.44), (int) (width*0.05), (int) (height*0.1));
@@ -1181,11 +1298,11 @@ public class knot extends JFrame implements ActionListener {
 		btnNewButton_7.setIcon(av1);
 		btnNewButton_7.setBounds((int) Math.round(width*0.35), (int) Math.round(height*0.54), (int) Math.round(width*0.19), (int) Math.round(height*0.19));
 		btnNewButton_7.addActionListener(this);
-		JLabel lblNewLabel_6 = new JLabel("Fried Fish with Fish Sauce");
+		JLabel lblNewLabel_6 = new JLabel("Fried Fish With Fish Sauce");
 		lblNewLabel_6.setBounds((int) (width*0.36), (int) (height*0.7), (int) (width*0.1), (int) (height*0.1));
 		panel1a.add(lblNewLabel_6);
 		JLabel lblNewLabel_7 = new JLabel("180 Bath");
-		lblNewLabel_7.setBounds((int) (width*0.45), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_7.setBounds((int) (width*0.47), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
 		panel1a.add(lblNewLabel_7);
 		num[7] = new JLabel("Number : "+Buy[7]);
 		num[7].setBounds((int) (width*0.505), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
@@ -1204,7 +1321,7 @@ public class knot extends JFrame implements ActionListener {
 		lblNewLabel_4.setBounds((int) (width*0.57), (int) (height*0.7), (int) (width*0.1), (int) (height*0.1));
 		panel1a.add(lblNewLabel_4);
 		JLabel lblNewLabel_5 = new JLabel("60 Bath");
-		lblNewLabel_5.setBounds((int) (width*0.66), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_5.setBounds((int) (width*0.68), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
 		panel1a.add(lblNewLabel_5);
 		num[8] = new JLabel("Number : "+Buy[8]);
 		num[8].setBounds((int) (width*0.715), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
@@ -1223,7 +1340,7 @@ public class knot extends JFrame implements ActionListener {
 		lblNewLabel_2.setBounds((int) (width*0.78), (int) (height*0.7), (int) (width*0.1), (int) (height*0.1));
 		panel1a.add(lblNewLabel_2);
 		JLabel lblNewLabel_3 = new JLabel("75 Bath");
-		lblNewLabel_3.setBounds((int) (width*0.87), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
+		lblNewLabel_3.setBounds((int) (width*0.89), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
 		panel1a.add(lblNewLabel_3);
 		num[9] = new JLabel("Number : "+Buy[9]);
 		num[9].setBounds((int) (width*0.925), (int) (height*0.7), (int) (width*0.05), (int) (height*0.1));
@@ -1250,71 +1367,164 @@ public class knot extends JFrame implements ActionListener {
 		panel1a.add(btnNewButton_10);
 		
 	}
-	public void setallbuy() {
-		for(int i = 0;i<=50;i++)
-		{
-			Buy[i] = 0;
-		}
+	public String[][] getData() {
+		return data;
 	}
-	public knot() {
-		Buy = new int[51];
-		num = new JLabel[51];
-		setExtendedState(JFrame.MAXIMIZED_BOTH);
-		getScreenSize();
-		setallbuy();
-		getContentPane().setBackground(Color.BLACK);
-		setTitle("Restaurant OOP");
-
-		buildPanel();
-		getContentPane().add(mainPanel, BorderLayout.CENTER);
-		getContentPane().add(panel5, BorderLayout.SOUTH);
-		
-		setVisible(true);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
-	private void getScreenSize() {
-        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        width = gd.getDisplayMode().getWidth();
-        height = gd.getDisplayMode().getHeight();
-    }
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		if(e.getActionCommand() == "total")
-		{					
-			System.out.println(1);
+	public class Total extends JFrame {
+		private JTable table;
+		private double sum=0;
+		private JScrollPane scrollPane;
+		private DefaultTableModel model; 
+		public Total() {
+			setExtendedState(JFrame.MAXIMIZED_BOTH);
+			setTitle("Restaurant");
+			
+			buildPanel2();
+			
+			setVisible(true);
+			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		}
-		else if(!(e.getActionCommand() == "put")&&!(e.getActionCommand() == "Not put"))
-		{
-			int i =1;
-			if(put.isSelected())
-			{
-				String no  = e.getActionCommand();
-				for(i = 1;i<51;i++)
-				{
-					if(i == Integer.parseInt(no))
-					{
-						Buy[i] = Buy[i]+1;
-						break;
-					}
+		private void buildPanel2(){
+			int j=0;
+			getContentPane().setLayout(null);
+			//Scroll
+			scrollPane = new JScrollPane(table);
+			scrollPane.setBounds((int)(width*0.15),(int)(height*0.1),(int)(width*0.7),(int)(height*0.6));
+			getContentPane().add(scrollPane);
+			//table
+			table = new JTable() {
+		        private static final long serialVersionUID = 1L;
+		        public boolean isCellEditable(int row, int column) {                
+		                return false;               
+		        };
+		    };
+			scrollPane.setViewportView(table);
+			table.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			// Model for Table
+			model = (DefaultTableModel)table.getModel();
+			model.addColumn("Name");
+			model.addColumn("Price");
+			model.addColumn("Quantity");
+			model.addColumn("AllPrice");
+			// Data Row
+			for(int i=0;i<Buy.length;i++) {
+				if(Buy[i]>0){
+				model.addRow(new Object[0]);
+				model.setValueAt(data[i][0], j, 0);
+				model.setValueAt(data[i][1], j, 1);
+				model.setValueAt(Buy[i], j, 2);
+				model.setValueAt(Integer.parseInt(data[i][1])*Buy[i], j, 3);
+				j++;
 				}
 			}
-			else if(out.isSelected())
-			{
-				String no  = e.getActionCommand();
-				for(i=1;i<51;i++)
-				{
-					if(i == Integer.parseInt(no))
-					{
-						if(Buy[i] >= 1)
+			DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+			centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+			table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+			table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
+			table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
+			//Total
+			for(int i=0;i<Buy.length;i++){
+				if(Buy[i]>0)
+					sum+=(Double.parseDouble(data[i][1])*Buy[i]);
+			}
+			JLabel lblNewLabel_1 = new JLabel("Total : "+sum);
+			lblNewLabel_1.setForeground(Color.WHITE);
+			lblNewLabel_1.setBounds((int)(width*0.805),(int)(height*0.72),161,20);
+			getContentPane().add(lblNewLabel_1);
+			//Botton
+			JButton btnNewButton_1 = new JButton("SEND");
+			btnNewButton_1.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e) {
+					//Writer
+					try {
+					FileWriter order = new FileWriter("#"+Order+".txt");
+					int l=data[0][0].length();
+					for(int i=0;i<Buy.length;i++) {
+						if(l <= data[i][0].length()&&Buy[i]>0)
 						{
-							Buy[i] = Buy[i]-1;
+							l = data[i][0].length();
 						}
-						break;
 					}
+					order.write("ORDER:#"+Order+"\n");
+					order.write("Name");
+					int num = (l-4)+10;
+					while(num>0) {	
+						order.write(" ");
+						num--;
+					}
+					order.write("Price");
+					order.write("             "+"Quantity"+"       "+"AllPrice \n");
+					for(int i=0;i<Buy.length;i++) {
+						if(Buy[i]>0) {
+							order.write(data[i][0]);
+							int v = 0;
+							if(data[i][1].length() == 2)
+							{
+								v =1;
+							}
+							num = (l-data[i][0].length())+10+v;
+							while(num>=0) {
+								order.write(" ");
+								num=num-1;
+							}
+							order.write(data[i][1]);
+							num = 3;
+							while(num>=0) {
+								order.write(" ");
+								num=num-1;
+							}
+							order.write("             "+Buy[i]+"           "+Double.parseDouble(data[i][1])*Buy[i]+" Bath \n");
+						}
+					}
+					num = l+40;
+					while(num>=0) {
+						order.write(" ");
+						num=num-1;
+					}
+					order.write("Total : "+sum+" Bath");
+					order.close();
+					}catch (IOException e1) {
+						e1.printStackTrace();
+					}
+					Order++;
+					dispose();
+					new Res();
 				}
-			}
-			num[i].setText("Number : "+Buy[i]);
+			});
+			btnNewButton_1.setBounds((int)(width*0.46),(int)(height*0.75), 151, 23);
+			getContentPane().add(btnNewButton_1);
+			
+			JButton btnNewButton_2 = new JButton("BACK");
+			btnNewButton_2.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e) {
+					dispose();
+					returnPage();
+				}
+			});
+			btnNewButton_2.setBounds((int)(width*0.15),(int)(height*0.75), 89, 23);
+			getContentPane().add(btnNewButton_2);
+			
+			JButton btnNewButton_3 = new JButton("CANCEL");
+			btnNewButton_3.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e) {
+					dispose();
+					new Res();
+				}
+			});
+			
+			JLabel lblNewLabel_2 = new JLabel("ORDER : #"+Order);
+			lblNewLabel_2.setForeground(Color.WHITE);
+			lblNewLabel_2.setBounds((int)(width*0.15),(int)(height*0.05),161,20);
+			getContentPane().add(lblNewLabel_2);
+			
+			btnNewButton_3.setBounds((int)(width*0.795),(int)(height*0.75), 89, 23);
+			getContentPane().setBackground(Color.BLACK);
+			getContentPane().add(btnNewButton_3);
+			
+			JLabel lblNewLabel_3 = new JLabel("");
+			lblNewLabel_3.setIcon(new ImageIcon("background.jpg"));
+			lblNewLabel_3.setBounds(0,0,(int)(width*1),(int)(height*1));
+			getContentPane().add(lblNewLabel_3);
 		}
 	}
 }
