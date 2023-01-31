@@ -1,0 +1,6 @@
+ORDER:#1
+Name                               Price             Quantity       AllPrice 
+Oyster Omelet                        85                 2           170.0 Bath 
+Fried Chicken With Garlic            70                 1           70.0 Bath 
+Fried Pock With Garlic               75                 3           225.0 Bath 
+                                                                  Total : 465.0 Bath
